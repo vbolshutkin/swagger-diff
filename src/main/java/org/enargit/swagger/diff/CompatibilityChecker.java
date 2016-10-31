@@ -28,12 +28,6 @@ public class CompatibilityChecker {
 
 	public boolean checkCompatibility(Swagger ref, Swagger target) {
 
-		//check for basePath:
-		if(ref.getBasePath()!=target.getBasePath()) return false;
-
-		//check for tags:
-		ref.getTags();
-
 		for (Map.Entry<String, Path> entry : ref.getPaths().entrySet()) {
 			/**
 			 * check for comparing paths.

@@ -23,11 +23,10 @@ public class CompatibilityCheckerTest {
 	
 	@Test
 	public void testCut() throws URISyntaxException {
+		Swagger swagger = readResource("/petstore/petstore-swagger.yaml");
+		Swagger swaggerCut = readResource("/petstore/petstore-cut-swagger.yaml");
 
-		Swagger cuurentSwagger = readResource("/petstore/mss/currentSwaggerFile.yaml");
-		Swagger changedSwagger = readResource("/petstore/mss/changedSwaggerFile.yaml");
-
-		assertFalse(checker.checkCompatibility(cuurentSwagger, changedSwagger));
+		assertFalse(checker.checkCompatibility(swagger, swaggerCut));
 	}
 	
 	@Test
@@ -62,6 +61,7 @@ public class CompatibilityCheckerTest {
 		Swagger swaggerEnrich = readResource("/petstore/petstore-enrich-swagger.yaml");
 		
 		assertTrue(checker.checkCompatibility(swagger, swaggerEnrich));
+
 	}
 
 }
