@@ -15,21 +15,39 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CompatibilityChecker {
 
+	// variable for checked DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES .
+	// TODO use it
+	private boolean  failOnUnknownProperties= false;
+	private static final Logger log = LoggerFactory
+			.getLogger(CompatibilityChecker.class);
+
 	public boolean checkCompatibility(Swagger ref, Swagger target) {
+
+		//check for basePath:
+		if(ref.getBasePath()!=target.getBasePath()) return false;
+
+		//check for tags:
+		ref.getTags();
+
 		for (Map.Entry<String, Path> entry : ref.getPaths().entrySet()) {
+			/**
+			 * check for comparing paths.
+			 */
 			if (target.getPath(entry.getKey()) == null) {
 				boolean allDeprecated = true;
 				for (Operation operation : entry.getValue().getOperations()) {
 					if (!(Boolean.TRUE == operation.isDeprecated())) allDeprecated = false;
 				}
-				
+
 				if (allDeprecated) {
-					//log
+					log.info("Path: " + entry.getKey() + " - is deprecated");
 				} else {
-					//log.info("Path " + entry.getKey() + "is missing");
+					log.error("Path: " + entry.getKey() + " - is missing");
 					return false;
 				}
 			}
@@ -38,11 +56,13 @@ public class CompatibilityChecker {
 				if (target.getPath(entry.getKey()) == null) continue;
 				if (!target.getPath(entry.getKey()).getOperationMap().containsKey(operationEntry.getKey())) {
 					if (Boolean.TRUE == operationEntry.getValue().isDeprecated()) {
-						//log.info
+//						log.info("");
 					} else {
-						//log.info("Operation " + operation  + " is missing from Path " + entry.getKey() + "is missing");
+						log.info("Operation " + entry.getKey()  + " is missing from Path " + entry.getKey() + "is missing");
 						return false;
 					}
+				} else{
+
 				}
 
 				Operation refOp = operationEntry.getValue();
@@ -69,10 +89,7 @@ public class CompatibilityChecker {
 							}
 						}
 					}
-					
-					System.out.println(respEntry.getValue().getHeaders());
 				}
-				
 			}
 		}
 		return true;
